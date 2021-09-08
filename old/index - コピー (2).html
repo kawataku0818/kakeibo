@@ -1,0 +1,80 @@
+<html>
+<head>
+<meta charset="utf-8"/>
+</head>
+<body>
+<br>
+<b>aaa</b><br>
+<br>
+
+▼メニュー<br>
+<form action="address_book.php" method="post">
+<input type="submit" value="aaa" name="btn">
+<input type="submit" value="bbb" name="btn">
+</form>
+<br>
+<?php
+switch($btn){
+case "aaa":
+	printAddressBook();
+	break;
+case "bbb":
+	print printInsertForm();
+	break;
+}
+exit();
+
+function connectDb() {
+	$dbHandle = pg_connect("host=localhost port=5432 dbname=kakeibo");
+
+	if($dbHandle == FALSE) {
+	}
+	return $dbHandle;
+	}
+function disconnectDb( $dbHandle ) {
+	$result = pg_close($dbHandle);
+	if($result == FALSE) {
+	}
+function execSql($dbHandle, $sql) {
+	$resultSet = pg_exec($dbHandle,$sql);
+	if($resultSet == FALSE) {
+	}
+	return $resultSet;
+}
+function printAddressBook() {
+	$dbHandle = connectDb();
+	$sql = "SELECT * FROM kakeibo";
+	$resultSet = execSql($dbHandle,$sql);
+ 	disconnectDb($dbHandle);
+ 	$resultNum = pg_numrows($resultSet);
+	$i = 0;
+	print "<table border=\"1\>";
+	while($i < $resultNum) {
+		$rec = pg_fetch_object($resultSet,$i);
+		print "<tr>";
+		print "<td>$rec->price</td>";
+		print "</tr>";
+		$i++;
+	}
+	print "</table>";
+}
+function printInsertForm() {
+	print "データを入力して下さい。<br>";
+	print "<form action=\"address_book.php\" method=\"post\">";
+	print "価格： <input type=\"text\" name=\"price\"><br>";
+	print "<input type=\"submit\" value=\"登録\" name=\"btn\">";
+	print "</form>";
+}
+
+function insertAddressRec($price) {
+	$dbHandle = connectDb();
+	$sql = "INSERT INTO kakeibo VALUES('$price')";
+	execSQL($dbHandle,$sql);
+	disconnectDb($dbHandle);
+	printAddressBook();
+}
+
+?>
+
+</body>
+</html>
